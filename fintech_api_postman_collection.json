@@ -1,0 +1,412 @@
+{
+  "info": {
+    "name": "Vellomij Fintech Banking API",
+    "_postman_id": "fintech-api-collection",
+    "description": "Full API testing collection for the Vellomij Fintech Banking Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8006"
+    },
+    {
+      "key": "token",
+      "value": "PASTE_JWT_TOKEN_HERE"
+    }
+  ],
+
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/Api_Url/FintechUsers/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"fullName\":\"John Doe\",\n\"email\":\"john@example.com\",\n\"password\":\"password123\"\n}"
+            }
+          }
+        },
+
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/Api_Url/FintechUsers/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"email\":\"john@example.com\",\n\"password\":\"password123\"\n}"
+            }
+          }
+        },
+
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/Api_Url/FintechUsers/logout"
+          }
+        },
+
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/Api_Url/FintechUsers/verify-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"otp\":\"123456\"\n}"
+            }
+          }
+        },
+
+        {
+          "name": "Resend OTP",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/Api_Url/FintechUsers/resend-otp"
+          }
+        },
+
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/Api_Url/FintechUsers/forgot-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"email\":\"john@example.com\"\n}"
+            }
+          }
+        },
+
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/Api_Url/FintechUsers/reset-password/TOKEN_HERE",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"password\":\"newpassword123\"\n}"
+            }
+          }
+        },
+
+        {
+          "name": "Set Transaction PIN",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/Api_Url/FintechUsers/set-transaction-pin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"pin\":\"1234\"\n}"
+            }
+          }
+        },
+
+        {
+          "name": "User Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/Api_Url/FintechUsers/dashboard"
+          }
+        },
+
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/Api_Url/FintechUsers/notifications"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Fund Wallet",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/Api_Url/FintechTransactions/fund",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"amount\":5000\n}"
+            }
+          }
+        },
+
+        {
+          "name": "Transfer Money",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/Api_Url/FintechTransactions/transfer",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"accountNumber\":\"1234567890\",\n\"amount\":5000,\n\"pin\":\"1234\"\n}"
+            }
+          }
+        },
+
+        {
+          "name": "Verify Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/Api_Url/FintechTransactions/verify-account",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"accountNumber\":\"1234567890\"\n}"
+            }
+          }
+        },
+
+        {
+          "name": "Transaction History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/Api_Url/FintechTransactions/history"
+          }
+        },
+
+        {
+          "name": "Transaction Receipt",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/Api_Url/FintechTransactions/receipt/TRANSACTION_ID"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Bills",
+      "item": [
+        {
+          "name": "Buy Airtime",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/Api_Url/FintechBills/buy-airtime",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"phoneNumber\":\"08012345678\",\n\"amount\":500,\n\"network\":\"MTN\",\n\"pin\":\"1234\"\n}"
+            }
+          }
+        },
+
+        {
+          "name": "Buy Electricity",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/Api_Url/FintechBills/buy-electricity",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"meterNumber\":\"123456789\",\n\"amount\":2000,\n\"provider\":\"IKEJA_DISCO\",\n\"pin\":\"1234\"\n}"
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Support",
+      "item": [
+        {
+          "name": "Create Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/Api_Url/FintechSupport/create",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"subject\":\"Transaction issue\",\n\"message\":\"My transfer failed\"\n}"
+            }
+          }
+        },
+
+        {
+          "name": "My Tickets",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/Api_Url/FintechSupport/my-tickets"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Approve KYC",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/Api_Url/FintechAdmin/approve-kyc",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"USER_ID\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Reject KYC",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/Api_Url/FintechAdmin/reject-kyc",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"USER_ID\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Freeze/Unfreeze User",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/Api_Url/FintechAdmin/freeze-user/USER_ID"
+          }
+        },
+        {
+          "name": "Update User Limit",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/Api_Url/FintechAdmin/update-user-limit/USER_ID",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newLimit\": 100000\n}"
+            }
+          }
+        },
+        {
+          "name": "Pending KYC",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/Api_Url/FintechAdmin/pending-kyc"
+          }
+        },
+        {
+          "name": "Get Pending KYCs",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/Api_Url/FintechAdmin/get-pending-kycs"
+          }
+        },
+        {
+          "name": "System Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/Api_Url/FintechAdmin/system-stats"
+          }
+        },
+        {
+          "name": "Search Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/Api_Url/FintechAdmin/search-users?query=example"
+          }
+        },
+        {
+          "name": "Make User Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/Api_Url/FintechAdmin/make-user-admin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"USER_ID\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Admin Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/Api_Url/FintechAdmin/dashboard-stats"
+          }
+        },
+        {
+          "name": "Update KYC Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/Api_Url/FintechAdmin/update-kyc-status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"USER_ID\",\n  \"status\": \"verified\"\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

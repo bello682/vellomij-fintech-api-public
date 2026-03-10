@@ -1,0 +1,183 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+
+}
+
+enum DocumentType {
+  passport
+  driverLicense
+  idCard
+}
+
+
+// 1. Update User Model to link to Transactions
+model User {
+  id                     String    @id @default(uuid())
+  fullName               String
+  email                  String    @unique
+  password               String
+  role                   String    @default("user")
+  status                 String    @default("inactive")
+  
+  // Use DateTime for automatic banking timestamps
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  
+  verification_status    String    @default("pending")
+  posts                  Int       @default(0)
+  
+  // Security Fields
+  otp                    String?
+  otpExpiresAt           DateTime? // Changed to DateTime
+  isVerified             Boolean   @default(false)
+  resetPasswordToken     String?
+  resetPasswordExpiresAt DateTime? // Changed to DateTime
+  facialVerification     Boolean   @default(false)
+  
+
+  transactionPin         String?
+
+
+// PRODUCTION AUDIT FIELDS
+  isDeleted              Boolean   @default(false)
+  deletedAt              DateTime?
+
+  // Relations
+  kyc                    Kyc?
+  bankInfo               BankInfo?
+
+  // Add these lines inside the User model to complete the relationship
+  sentTransactions     Transaction[] @relation("SentTransactions")
+  receivedTransactions Transaction[] @relation("ReceivedTransactions")
+
+
+// ADD THIS LINE BELOW TO FIX THE ERROR
+notifications        Notification[]
+
+supportTickets SupportTicket[]
+
+
+  // NEW ADMIN CONTROL FIELDS
+  isFrozen          Boolean   @default(false)
+  // Set default limit to 50,000,000.0 (50 Million NGN)
+  // dailyTransferLimit Float     @default(50000000.0)
+  dailyTransferLimit Float     @default(50000.0) // Default limit of 50k NGN
+
+  isAdmin           Boolean   @default(false)   // To distinguish admin users
+}
+
+
+// 2. KYC
+model Kyc {
+  id            String       @id @default(uuid())
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String       @unique
+  documentType  DocumentType
+  documentImage String       // URL
+  occupation    String
+  address       String
+  dateOfBirth   DateTime     // Changed to DateTime for age validation
+  placeOfWork   String
+  bvn           String       @unique // BVN should always be unique
+  phoneNumber   String
+  verified      Boolean      @default(false)
+}
+
+
+// 3. Update BankInfo to include balance
+model BankInfo {
+  id                String  @id @default(uuid())
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String  @unique
+  bankName          String?
+  accountNumber     String? @unique // Added @unique so we can find receivers easily
+  accountHolderName String?
+  balance           Float   @default(0.0) // The actual money field
+  verified          Boolean @default(false)
+}
+
+
+
+enum TransactionType {
+  TRANSFER
+  AIRTIME
+  ELECTRICITY
+  DEPOSIT
+}
+
+
+// 4. Add the Transaction model (Audit Trail)
+model Transaction {
+  id          String   @id @default(uuid())
+  amount      Float
+  currency    String   @default("NGN")
+ // Use the Enum we created, remove the "String" version
+  type        TransactionType @default(TRANSFER)
+  status      String   @default("PENDING") // PENDING, COMPLETED, FAILED
+  description String?
+  category    String          @default("General") // Useful for dashboard charts
+
+  // --- ADD THESE SNAPSHOT FIELDS ---
+  senderName       String?
+  senderBank       String?   @default("Vellomij Bank")
+  senderAccount    String?
+  
+  recipientName    String?
+  recipientBank    String?
+  recipientAccount String?
+  // ---------------------------------
+  
+  // Relations
+  // The sender (Who gave the money)
+  // The sender (Always required)
+  senderId    String
+  sender      User     @relation("SentTransactions", fields: [senderId], references: [id])
+
+  // The receiver (Who got the money)
+  // The receiver (Optional ? for Bill Payments)
+  receiverId  String?
+  receiver    User?     @relation("ReceivedTransactions", fields: [receiverId], references: [id])
+
+  createdAt   DateTime @default(now())
+}
+
+
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String   // e.g., "Money Received"
+  message   String   // e.g., "You have received 5,000 NGN from..."
+  type      String   // e.g., "CREDIT", "DEBIT", "SYSTEM", "KYC"
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+enum TicketStatus {
+  OPEN
+  PENDING
+  RESOLVED
+  CLOSED
+}
+
+model SupportTicket {
+  id          String       @id @default(uuid())
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  subject     String       // e.g., "Failed Transaction"
+  message     String       // The user's complaint
+  status      TicketStatus @default(OPEN)
+  priority    String       @default("MEDIUM") // LOW, MEDIUM, HIGH
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // If you want to store admin replies later
+  adminReply  String?
+}
