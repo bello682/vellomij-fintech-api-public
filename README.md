@@ -316,6 +316,7 @@ node server.js
 Server runs at
 
 http://localhost:8006
+https://vellomij-fintech-api-public.onrender.com
 
 ---
 
@@ -331,7 +332,7 @@ Open Postman and click Import.
 
 Drag and drop the JSON file.
 
-Configure your base_url environment variable (e.g., http://localhost:8006/Api_Url).
+Configure your base_url environment variable (e.g., http://localhost:8006/Api_Url OR https://vellomij-fintech-api-public.onrender.com/Api_Url).
 
 ---
 
