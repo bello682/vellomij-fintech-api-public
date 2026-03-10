@@ -298,6 +298,22 @@ http://localhost:8006
 
 ---
 
+---
+
+**🧪 API Testing (Postman)**
+
+To make testing as seamless as possible, I have included a pre-configured Postman Collection. This allows you to test all endpoints (Auth, Transfers, Admin, Bills) without manual setup.
+
+Locate the file fintech_api_postman_collection.json in the root directory.
+
+Open Postman and click Import.
+
+Drag and drop the JSON file.
+
+Configure your base_url environment variable (e.g., http://localhost:8006/Api_Url).
+
+---
+
 # Creating a Super Admin
 
 After registering a user normally:
