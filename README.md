@@ -211,7 +211,7 @@ project-root
 
 ---
 
-# Important Note for Recruiters
+# Important Note for Testers/Recruiters
 
 ### Email Delivery in Production
 
@@ -236,6 +236,27 @@ Option 2
 Run the project locally where SMTP is not blocked.
 
 Local testing will allow OTP verification emails to be delivered correctly.
+
+---
+
+---
+
+## 🧠 Technical Challenges & Solutions
+
+### 1. Preventing "Double-Spending" & Race Conditions
+
+**Challenge:** In a fintech app, two simultaneous requests could potentially deduct money from an account twice before the first balance check finishes.
+**Solution:** I implemented **Prisma Atomic Transactions**. By wrapping the debit and credit logic in a `$transaction` block, the database ensures that both operations succeed or both fail, maintaining a consistent ledger.
+
+### 2. Audit Trail Integrity
+
+**Challenge:** If a user changes their legal name, past transaction receipts would become historically inaccurate.
+**Solution:** I designed a **Snapshot Pattern**. Instead of just linking to a User ID, the Transaction model stores the `senderName` and `recipientName` as strings at the moment of the transfer. This creates an unchangeable audit trail required for financial compliance.
+
+### 3. Secure Document Handling
+
+**Challenge:** Handling sensitive KYC documents (Passports/IDs) directly on the server is a security risk and memory hog.
+**Solution:** I integrated **Cloudinary** with `express-fileupload`. Files are streamed to secure cloud storage, and only the secure URL and metadata are stored in the database, reducing server load and increasing security.
 
 ---
 
