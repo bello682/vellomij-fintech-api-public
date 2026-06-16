@@ -28,9 +28,17 @@ const generateAccountNumber = () => {
   return "22" + Math.floor(10000000 + Math.random() * 90000000).toString();
 };
 
-const sendPasswordResetEmail = async (email, resetToken) => {
+const sendPasswordResetEmail = async (email, resetToken, platform) => {
   const nodemailer = require("nodemailer");
-  const resetLink = `${process.env.WEBSITE_URL}/reset-password/${resetToken}`;
+  // Define base URLs based on platform
+  const webBaseUrl = "http://localhost:3000";
+  const mobileBaseUrl =
+    "https://fintech-mobile-app-frontend-reset-p.vercel.app";
+
+  // Decide which URL to use
+  const baseUrl = platform === "mobile" ? mobileBaseUrl : webBaseUrl;
+  const resetLink = `${baseUrl}/reset-password/${resetToken}`;
+  // const resetLink = `${process.env.WEBSITE_URL}/reset-password/${resetToken}`;
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -305,6 +313,9 @@ const LoginUser = async (req, res, next) => {
 // 5. FORGET PASSWORD
 const ForgetPassword = async (req, res, next) => {
   const email = req.body.email?.toLowerCase().trim();
+  // Expect 'web' or 'mobile' from the frontend
+  const platform = req.body.platform || "web";
+
   try {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user)
@@ -318,7 +329,10 @@ const ForgetPassword = async (req, res, next) => {
       data: { resetPasswordToken: resetToken, resetPasswordExpiresAt: expires },
     });
 
-    await sendPasswordResetEmail(email, resetToken);
+    // Pass the platform to your email sender
+    // await sendPasswordResetEmail(email, resetToken);
+    await sendPasswordResetEmail(email, resetToken, platform);
+
     res.json({ message: "Reset link sent to your email." });
   } catch (err) {
     next(new HttpError(err.message, 500));

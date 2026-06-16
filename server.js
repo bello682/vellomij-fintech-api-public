@@ -24,22 +24,25 @@ const app = express();
 app.use(helmet());
 
 app.use(
-	cors({
-		credentials: true,
-		origin: function (origin, callback) {
-			const allowedOrigins = [
-				// "*",
-				"http://192.168.0.160:8081",
-				"https://fintech-mobile-app-frontend-reset-p.vercel.app",
-				"http://localhost:4123",
-			];
-			if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-				callback(null, true);
-			} else {
-				callback(new Error("Not allowed by CORS"));
-			}
-		},
-	})
+  cors({
+    credentials: true,
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        // "*",
+        "http://192.168.0.160:8081",
+        "https://fintech-mobile-app-frontend-reset-p.vercel.app",
+        "http://localhost:4123",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://expo.dev/accounts/olamijidev/projects/VellomijBank/builds/007682c8-ac0c-4e60-a2dc-7a0d52f59af0",
+      ];
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  }),
 );
 
 // 2. Body Parsers
@@ -54,10 +57,10 @@ app.use(express.urlencoded({ extended: true }));
 // 3. File Uploads
 // Configure express-fileupload with temp files support
 app.use(
-	upload({
-		useTempFiles: true,
-		tempFileDir: "/tmp/", // Temporary directory for file uploads
-	})
+  upload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/", // Temporary directory for file uploads
+  }),
 );
 
 // 4. Rate Limiting (MUST be before routes to catch them)
@@ -79,16 +82,16 @@ app.use(errorHandler);
 
 // Database connection and server start
 const dataBaseConnection = async () => {
-	try {
-		await prisma.$connect();
-		console.log("Prisma connected to PostgreSQL (via DATABASE_URL)");
+  try {
+    await prisma.$connect();
+    console.log("Prisma connected to PostgreSQL (via DATABASE_URL)");
 
-		app.listen(process.env.PORT, () => {
-			console.log(`Server is running on port ${process.env.PORT}`);
-		});
-	} catch (err) {
-		console.error("Error connecting to the database:", err);
-	}
+    app.listen(process.env.PORT, () => {
+      console.log(`Server is running on port ${process.env.PORT}`);
+    });
+  } catch (err) {
+    console.error("Error connecting to the database:", err);
+  }
 };
 
 dataBaseConnection();
