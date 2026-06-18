@@ -19,6 +19,9 @@ const { apiLimiter } = require("./middleware/rateLimiter");
 
 const app = express();
 
+// ADD THIS LINE
+app.set("trust proxy", 1);
+
 // 1. Security Headers first
 // Adds security headers to protect against common web vulnerabilities
 app.use(helmet());
