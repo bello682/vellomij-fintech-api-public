@@ -237,11 +237,17 @@ const LoginUser = async (req, res, next) => {
   try {
     // VALIDATION STEP
     // This will throw an error automatically if req.body is missing fields
-    loginSchema.parse(req.body);
+    // loginSchema.parse(req.body);
+    const validatedData = loginSchema.parse(req.body);
 
-    const { email, password } = req.body;
+    const { email, password } = validatedData;
+
+    // Add this guard clause
+    if (!email) {
+      return next(new HttpError("Email is required", 400));
+    }
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { email: email },
       include: { bankInfo: true },
     });
 
@@ -304,6 +310,9 @@ const LoginUser = async (req, res, next) => {
       // Returns the first validation error message (e.g., "Email is required")
       return next(new HttpError(err.errors[0].message, 400));
     }
+
+    // Log the actual error for debugging
+    console.error("Login Error:", err);
     next(
       new HttpError(`${err.message || "Login failed, please try again."}`, 500),
     );
