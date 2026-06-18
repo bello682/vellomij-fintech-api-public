@@ -86,6 +86,11 @@ app.use(errorHandler);
 // Database connection and server start
 const dataBaseConnection = async () => {
   try {
+    // (This just shows the start of the string to confirm it's loading)
+    console.log(
+      "Attempting to connect to database at:",
+      process.env.DATABASE_URL?.substring(0, 15) + "...",
+    );
     await prisma.$connect();
     console.log("Prisma connected to PostgreSQL (via DATABASE_URL)");
 
@@ -116,3 +121,5 @@ dataBaseConnection();
 // Remember to keep your environment variables secure and never expose them in your codebase!
 // Also, consider setting up logging and monitoring for your server to track performance and errors.
 // Finally, ensure you have proper testing in place for your routes and middleware to maintain code quality.
+
+// postgresql://postgres:Olamiji9@localhost:5432/fintech_db?schema=public
