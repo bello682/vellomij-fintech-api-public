@@ -2,4 +2,4 @@
 node_modules/
 .env
 .expo/
-package-lock.json
+# package-lock.json
