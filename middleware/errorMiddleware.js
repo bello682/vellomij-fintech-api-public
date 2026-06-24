@@ -8,6 +8,7 @@ const notFound = (req, res, next) => {
 };
 
 const errorHandler = (error, req, res, next) => {
+  console.error("DEBUG - Error caught:", error.message);
   if (res.headerSent) {
     return next(error);
   }
