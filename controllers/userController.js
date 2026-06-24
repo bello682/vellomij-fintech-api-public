@@ -238,6 +238,7 @@ const LoginUser = async (req, res, next) => {
     // VALIDATION STEP
     // This will throw an error automatically if req.body is missing fields
     // loginSchema.parse(req.body);
+    console.log("Login attempt received for email:", req.body.email);
     const validatedData = loginSchema.parse(req.body);
 
     const { email, password } = validatedData;
@@ -252,7 +253,10 @@ const LoginUser = async (req, res, next) => {
     });
 
     // 1. Check if user exists first
-    if (!user) return next(new HttpError("Invalid credentials", 401));
+    if (!user) {
+      console.log("Login failed: User not found");
+      return next(new HttpError("Invalid credentials", 401));
+    }
 
     // 2. Check if deleted (prevents bcrypt work for closed accounts)
     if (user.isDeleted) {
@@ -266,8 +270,8 @@ const LoginUser = async (req, res, next) => {
 
     // 3. Now do the heavy lifting (bcrypt)
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid)
-      return next(new HttpError("Invalid credentials", 401));
+    if (!isPasswordValid) console.log("Login failed: Password mismatch");
+    return next(new HttpError("Invalid credentials", 401));
 
     if (user.isFrozen) {
       return next(
