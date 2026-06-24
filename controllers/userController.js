@@ -150,34 +150,39 @@ const UserRegistration = async (req, res, next) => {
 
     const token = generateToken(user);
 
-    // for testing sake so employer can test
-    if (process.env.NODE_ENV === "development") {
-      res.status(201).json({
-        message: "OTP sent (Development Mode)",
-        otp: otp, // Appending it so the frontend can display it
-        token,
-        user: { email: user.email, fullName: user.fullName },
-      });
-    } else {
-      // Normal production response
-      res.status(201).json({
-        message: "OTP sent to your email.",
-        token,
-        user: {
-          email: user.email,
-          fullName: user.fullName,
-        },
-      });
-    }
+    // // for testing sake so employer can test
 
-    // res.status(201).json({
-    //   message: "OTP sent to your email.",
-    //   token,
-    //   user: {
-    //     email: user.email,
-    //     fullName: user.fullName,
-    //   },
-    // });
+    // const isDevelopment =
+    //   process.env.NODE_ENV === "development" ||
+    //   process.env.ENABLE_TEST_MODE === "true";
+    // if (isDevelopment) {
+    //   res.status(201).json({
+    //     message: "OTP sent (Development Mode)",
+    //     otp: otp, // Appending it so the frontend can display it
+    //     token,
+    //     user: { email: user.email, fullName: user.fullName },
+    //   });
+    // } else {
+    //   // Normal production response
+    //   res.status(201).json({
+    //     message: "OTP sent to your email.",
+    //     token,
+    //     user: {
+    //       email: user.email,
+    //       fullName: user.fullName,
+    //     },
+    //   });
+    // }
+
+    res.status(201).json({
+      message: "OTP sent to your email.",
+      token,
+      otp: otp,
+      user: {
+        email: user.email,
+        fullName: user.fullName,
+      },
+    });
   } catch (err) {
     // If validation fails or database crashes
     const message = err.errors ? err.errors[0].message : err.message;
