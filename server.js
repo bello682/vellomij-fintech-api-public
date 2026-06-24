@@ -34,6 +34,7 @@ app.use(
         // "*",
         "http://192.168.0.160:8081",
         "https://fintech-mobile-app-frontend-reset-p.vercel.app",
+        "https://vellomij-fintech-web-banking.vercel.app",
         "http://localhost:4123",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
