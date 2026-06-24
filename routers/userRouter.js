@@ -1,19 +1,19 @@
 const { Router } = require("express");
 
 const {
-	UserRegistration,
-	LoginUser,
-	LogoutUser,
-	UpdateUserKycById,
-	DeleteUserById,
-	FetchUserById,
-	ForgetPassword,
-	ResetPassword,
-	VerifyUserByOtp,
-	ResendOTP,
-	setTransactionPin,
-	getMyNotifications,
-	getUserDashboard,
+  UserRegistration,
+  LoginUser,
+  LogoutUser,
+  UpdateUserKycById,
+  DeleteUserById,
+  FetchUserById,
+  ForgetPassword,
+  ResetPassword,
+  VerifyUserByOtp,
+  ResendOTP,
+  setTransactionPin,
+  getMyNotifications,
+  getUserDashboard,
 } = require("../controllers/userController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -53,10 +53,10 @@ router.post("/resend-otp", ResendOTP);
 
 // Set transaction pin route
 router.post(
-	"/set-transaction-pin",
-	authMiddleware,
-	sensitiveOpLimiter,
-	setTransactionPin
+  "/set-transaction-pin",
+  authMiddleware,
+  sensitiveOpLimiter,
+  setTransactionPin,
 );
 
 // Get my notifications route

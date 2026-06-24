@@ -270,8 +270,11 @@ const LoginUser = async (req, res, next) => {
 
     // 3. Now do the heavy lifting (bcrypt)
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) console.log("Login failed: Password mismatch");
-    return next(new HttpError("Invalid credentials", 401));
+
+    if (!isPasswordValid) {
+      console.log("Login failed: Password mismatch");
+      return next(new HttpError("Invalid credentials", 401));
+    }
 
     if (user.isFrozen) {
       return next(
