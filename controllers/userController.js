@@ -150,14 +150,34 @@ const UserRegistration = async (req, res, next) => {
 
     const token = generateToken(user);
 
-    res.status(201).json({
-      message: "OTP sent to your email.",
-      token,
-      user: {
-        email: user.email,
-        fullName: user.fullName,
-      },
-    });
+    // for testing sake so employer can test
+    if (process.env.NODE_ENV === "development") {
+      res.status(201).json({
+        message: "OTP sent (Development Mode)",
+        otp: otp, // Appending it so the frontend can display it
+        token,
+        user: { email: user.email, fullName: user.fullName },
+      });
+    } else {
+      // Normal production response
+      res.status(201).json({
+        message: "OTP sent to your email.",
+        token,
+        user: {
+          email: user.email,
+          fullName: user.fullName,
+        },
+      });
+    }
+
+    // res.status(201).json({
+    //   message: "OTP sent to your email.",
+    //   token,
+    //   user: {
+    //     email: user.email,
+    //     fullName: user.fullName,
+    //   },
+    // });
   } catch (err) {
     // If validation fails or database crashes
     const message = err.errors ? err.errors[0].message : err.message;
