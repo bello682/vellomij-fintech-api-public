@@ -143,7 +143,10 @@ const UserRegistration = async (req, res, next) => {
     }
 
     // 5. Send Email (If this fails, the catch block handles it)
-    await sendOTPEmail(user.email, otp, user.fullName);
+    // await sendOTPEmail(user.email, otp, user.fullName);
+    sendOTPEmail(user.email, otp, user.fullName).catch((err) => {
+      console.error("Background email task failed:", err);
+    });
 
     const token = generateToken(user);
 
