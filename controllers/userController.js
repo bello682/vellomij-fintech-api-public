@@ -256,7 +256,7 @@ const ResendOTP = async (req, res, next) => {
     });
     const token = generateToken(user);
 
-    res.json({ message: "A new OTP has been sent.", token });
+    res.json({ message: "A new OTP has been sent.", token, newOtp });
   } catch (err) {
     console.log("Error resending OTP:", err.message);
     next(new HttpError(err.message, 500));
