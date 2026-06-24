@@ -250,7 +250,10 @@ const ResendOTP = async (req, res, next) => {
       data: { otp: newOtp, otpExpiresAt },
     });
 
-    await sendOTPEmail(email, newOtp);
+    // await sendOTPEmail(email, newOtp);
+    sendOTPEmail(email, newOtp).catch((err) => {
+      console.error("Background email task failed:", err);
+    });
     const token = generateToken(user);
 
     res.json({ message: "A new OTP has been sent.", token });
