@@ -31,7 +31,7 @@ const generateAccountNumber = () => {
 const sendPasswordResetEmail = async (email, resetToken, platform) => {
   const nodemailer = require("nodemailer");
   // Define base URLs based on platform
-  const webBaseUrl = "http://localhost:3000";
+  const webBaseUrl = "https://vellomij-fintech-web-banking.vercel.app";
   const mobileBaseUrl =
     "https://fintech-mobile-app-frontend-reset-p.vercel.app";
 
