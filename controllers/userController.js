@@ -378,7 +378,10 @@ const ForgetPassword = async (req, res, next) => {
 
     // Pass the platform to your email sender
     // await sendPasswordResetEmail(email, resetToken);
-    await sendPasswordResetEmail(email, resetToken, platform);
+    // await sendPasswordResetEmail(email, resetToken, platform);
+    sendPasswordResetEmail(email, resetToken, platform).catch((err) => {
+      console.error("Background email task failed for forget password:", err);
+    });
 
     res.json({ message: "Reset link sent to your email." });
   } catch (err) {
