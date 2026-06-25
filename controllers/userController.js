@@ -563,6 +563,7 @@ const FetchUserById = async (req, res, next) => {
 const DeleteUserById = async (req, res, next) => {
   try {
     const userId = req.params.id;
+    console.log("Searching for user with ID in DB:", userId);
 
     // 1. Check if user exists and has 0 balance (Production safety)
     const userBank = await prisma.bankInfo.findUnique({ where: { userId } });
@@ -576,7 +577,8 @@ const DeleteUserById = async (req, res, next) => {
     }
 
     // 2. Perform Soft Delete
-    await prisma.user.update({
+    console.log("Searching for user with ID in DB:", userId);
+    const userExists = await prisma.user.update({
       where: { id: userId },
       data: {
         isDeleted: true,
@@ -584,6 +586,8 @@ const DeleteUserById = async (req, res, next) => {
         status: "deleted", // Update status for easy filtering
       },
     });
+
+    console.log("Does user exist?", userExists);
 
     res.json({
       success: true,
