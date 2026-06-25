@@ -14,6 +14,7 @@ const {
   setTransactionPin,
   getMyNotifications,
   getUserDashboard,
+  getFullProfile,
 } = require("../controllers/userController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -64,6 +65,9 @@ router.get("/notifications", authMiddleware, getMyNotifications);
 
 // Get user dashboard route
 router.get("/dashboard", authMiddleware, getUserDashboard);
+
+// GET User info route.
+router.get("/profile-data", authMiddleware, getFullProfile);
 
 module.exports = router;
 

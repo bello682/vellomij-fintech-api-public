@@ -758,6 +758,35 @@ const getUserDashboard = async (req, res, next) => {
   }
 };
 
+//
+const getFullProfile = async (req, res, next) => {
+  try {
+    const userId = req.user.userId || req.user.id;
+
+    const fullProfile = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        kyc: true,
+        bankInfo: true,
+        // Include both sets of transactions
+        sentTransactions: { orderBy: { createdAt: "desc" } },
+        receivedTransactions: { orderBy: { createdAt: "desc" } },
+        notifications: { orderBy: { createdAt: "desc" } },
+        supportTickets: { orderBy: { createdAt: "desc" } },
+      },
+    });
+
+    if (!fullProfile) return next(new HttpError("User not found", 404));
+
+    // Optional: Filter out sensitive fields like password before sending
+    const { password, ...userProfile } = fullProfile;
+
+    res.json(userProfile);
+  } catch (err) {
+    next(new HttpError("Could not fetch profile data.", 500));
+  }
+};
+
 module.exports = {
   UserRegistration,
   LoginUser,
@@ -773,4 +802,5 @@ module.exports = {
   ResetPassword,
   setTransactionPin,
   getMyNotifications,
+  getFullProfile,
 };
