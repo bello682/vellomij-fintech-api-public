@@ -383,7 +383,14 @@ const ForgetPassword = async (req, res, next) => {
       console.error("Background email task failed for forget password:", err);
     });
 
-    res.json({ message: "Reset link sent to your email." });
+    res.json({
+      message: "Reset link sent to your email.",
+      mailData: {
+        email,
+        resetToken,
+        platform,
+      },
+    });
   } catch (err) {
     next(new HttpError(err.message, 500));
   }
@@ -583,6 +590,7 @@ const DeleteUserById = async (req, res, next) => {
       message: "User account deactivated and scheduled for closure.",
     });
   } catch (err) {
+    console.log("Failed to delete account:", err);
     next(new HttpError("Account deactivation failed.", 500));
   }
 };
