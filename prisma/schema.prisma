@@ -6,13 +6,19 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-
-}
+  
+  }
 
 enum DocumentType {
   passport
   driverLicense
   idCard
+}
+
+enum KycStatus {
+  PENDING
+  VERIFIED
+  REJECTED
 }
 
 
@@ -87,6 +93,9 @@ model Kyc {
   bvn           String       @unique // BVN should always be unique
   phoneNumber   String
   verified      Boolean      @default(false)
+    status          KycStatus    @default(PENDING)   // ← ADDED
+  rejectionReason String?                          // ← ADDED
+  createdAt       DateTime     @default(now())    // ← ADDED (needed for orderBy in getPendingKYCs)
 }
 
 

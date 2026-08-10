@@ -1,0 +1,7 @@
+-- CreateEnum
+CREATE TYPE "KycStatus" AS ENUM ('PENDING', 'VERIFIED', 'REJECTED');
+
+-- AlterTable
+ALTER TABLE "Kyc" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "rejectionReason" TEXT,
+ADD COLUMN     "status" "KycStatus" NOT NULL DEFAULT 'PENDING';

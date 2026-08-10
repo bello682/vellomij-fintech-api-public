@@ -1,8 +1,7 @@
-// Server.js
-
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+
 const prisma = require("./confiq/prismaClient");
 const upload = require("express-fileupload");
 const path = require("path");
@@ -14,33 +13,105 @@ const userTransactionRoute = require("./routers/userTransactionRoutes");
 const adminRoute = require("./routers/adminRoutes");
 const supportRoute = require("./routers/supportRouter");
 const billRoute = require("./routers/billRoutes");
+
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
+
 const { apiLimiter } = require("./middleware/rateLimiter");
+
+// ============================================================
+// APP INITIALIZATION
+// ============================================================
 
 const app = express();
 
-// ADD THIS LINE
+// ============================================================
+// TEMPORARY DATABASE DEBUG ROUTE
+// ============================================================
+//
+// ⚠️ TEMPORARY — DELETE THIS ENTIRE SECTION AFTER TESTING
+// We are using this to determine whether Render can directly
+// connect to PostgreSQL.
+//
+// Test locally:
+// http://localhost:8006/debug/database
+//
+// Test on Render:
+// https://YOUR-RENDER-URL/debug/database
+//
+// ============================================================
+
+app.get("/debug/database", async (req, res) => {
+  try {
+    const { Pool } = require("pg");
+
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      connectionTimeoutMillis: 10000,
+      idleTimeoutMillis: 30000,
+    });
+
+    const result = await pool.query("SELECT NOW()");
+
+    await pool.end();
+
+    res.status(200).json({
+      success: true,
+      message: "Database connection successful",
+      databaseTime: result.rows[0].now,
+    });
+  } catch (error) {
+    console.error("DATABASE DEBUG ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      code: error.code,
+      message: error.message,
+      address: error.address,
+      port: error.port,
+    });
+  }
+});
+
+// ============================================================
+// TRUST PROXY
+// ============================================================
+
 app.set("trust proxy", 1);
 
-// 1. Security Headers first
-// Adds security headers to protect against common web vulnerabilities
+// ============================================================
+// SECURITY HEADERS
+// ============================================================
+
 app.use(helmet());
+
+// ============================================================
+// CORS
+// ============================================================
 
 app.use(
   cors({
     credentials: true,
+
     origin: function (origin, callback) {
       const allowedOrigins = [
-        // "*",
-        "http://192.168.0.160:8081",
+        // "http://192.168.0.160:8081",
+
         "https://fintech-mobile-app-frontend-reset-p.vercel.app",
+
         "https://vellomij-fintech-web-banking.vercel.app",
+
         "http://localhost:4123",
+
         "http://localhost:3000",
+
         "http://127.0.0.1:3000",
+
         "https://expo.dev/accounts/olamijidev/projects/VellomijBank/builds/007682c8-ac0c-4e60-a2dc-7a0d52f59af0",
       ];
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+
+      // Allow requests without an Origin header
+      // such as Postman, mobile apps, curl, etc.
+      if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -49,52 +120,111 @@ app.use(
   }),
 );
 
-// 2. Body Parsers
-// Middleware configuration
+// ============================================================
+// BODY PARSERS
+// ============================================================
+
 app.use(express.json({ extended: true }));
-app.use(express.urlencoded({ extended: true }));
 
-//  for accepting post from formData
-// const bodyParser = require('express').json;
-// app.use(bodyParser());
-
-// 3. File Uploads
-// Configure express-fileupload with temp files support
 app.use(
-  upload({
-    useTempFiles: true,
-    tempFileDir: "/tmp/", // Temporary directory for file uploads
+  express.urlencoded({
+    extended: true,
   }),
 );
 
-// 4. Rate Limiting (MUST be before routes to catch them)
-// Apply rate limiting to all API routes
+// ============================================================
+// FILE UPLOADS
+// ============================================================
+
+app.use(
+  upload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  }),
+);
+
+// ============================================================
+// RATE LIMITING
+// ============================================================
+
 app.use("/Api_Url/", apiLimiter);
 
-// 5. Routes
-// Main user routes
+// ============================================================
+// ROUTES
+// ============================================================
+
+// User routes
 app.use("/Api_Url/FintechUsers", userRoute);
+
+// Transaction routes
 app.use("/Api_Url/FintechTransactions", userTransactionRoute);
+
+// Admin routes
 app.use("/Api_Url/FintechAdmin", adminRoute);
+
+// Support routes
 app.use("/Api_Url/FintechSupport", supportRoute);
+
+// Bill payment routes
 app.use("/Api_Url/FintechBills", billRoute);
 
-// 6. Final Error Handlers (MUST be last)
-// Error handling middlewares
+// ============================================================
+// TEMPORARY PRISMA DATABASE CONNECTION TEST
+// ============================================================
+//
+// ⚠️ TEMPORARY — DELETE THIS FUNCTION AFTER TESTING
+//
+// This tests the SAME Prisma client used by your controllers.
+//
+// ============================================================
+
+async function testDatabaseConnection() {
+  try {
+    await prisma.$queryRaw`SELECT NOW()`;
+
+    console.log("✅ DATABASE CONNECTION SUCCESSFUL");
+  } catch (error) {
+    console.error("❌ DATABASE CONNECTION FAILED");
+
+    console.error("Code:", error.code);
+
+    console.error("Message:", error.message);
+
+    console.error("Address:", error.address);
+
+    console.error("Port:", error.port);
+  }
+}
+
+// ============================================================
+// FINAL ERROR HANDLERS
+// ============================================================
+
 app.use(notFound);
+
 app.use(errorHandler);
 
-// Database connection and server start
+// ============================================================
+// DATABASE CONNECTION + SERVER START
+// ============================================================
+
 const dataBaseConnection = async () => {
   try {
-    // (This just shows the start of the string to confirm it's loading)
+    // Show only the beginning of DATABASE_URL.
+    // NEVER log the complete DATABASE_URL because it contains
+    // your database credentials.
+
     console.log(
       "Attempting to connect to database at:",
       process.env.DATABASE_URL?.substring(0, 15) + "...",
     );
+
+    // Connect Prisma
     await prisma.$connect();
+
     console.log("Prisma connected to PostgreSQL (via DATABASE_URL)");
 
+    // Start Express server
     app.listen(process.env.PORT, () => {
       console.log(`Server is running on port ${process.env.PORT}`);
     });
@@ -103,24 +233,53 @@ const dataBaseConnection = async () => {
   }
 };
 
+// ============================================================
+// START APPLICATION
+// ============================================================
+
 dataBaseConnection();
 
-// options for sending email i will migrate to are
+// ============================================================
+// TEMPORARY PRISMA TEST
+// ============================================================
+//
+// ⚠️ TEMPORARY — DELETE THIS LINE AFTER TESTING
+//
+// ============================================================
 
-// The Services to Remember
-// Here are the three I recommend you keep in your notes for when we do the "Big Migration":
+testDatabaseConnection();
 
-// Resend: (My top choice for clean code and 1-second delivery).
+// ============================================================
+// EMAIL SERVICE NOTES
+// ============================================================
+//
+// Future email migration options:
+//
+// 1. Resend
+// 2. Postmark
+// 3. SendGrid
+//
+// ============================================================
 
-// Postmark: (The "Gold Standard" for transactional emails like OTPs and password resets).
-
-// SendGrid: (What you already have—very powerful, but requires careful domain verification to avoid the spam folder).
-
-// Always use this "npx prisma studio" command to view and manage your database with Prisma Studio.
+// ============================================================
+// PRISMA STUDIO
+// ============================================================
+//
+// To open Prisma Studio:
+//
 // npx prisma studio
+//
+// ============================================================
 
-// Remember to keep your environment variables secure and never expose them in your codebase!
-// Also, consider setting up logging and monitoring for your server to track performance and errors.
-// Finally, ensure you have proper testing in place for your routes and middleware to maintain code quality.
-
-// postgresql://postgres:Olamiji9@localhost:5432/fintech_db?schema=public
+// ============================================================
+// SECURITY REMINDER
+// ============================================================
+//
+// NEVER put real passwords, API keys, database URLs,
+// Cloudinary secrets, Stripe secrets, Paystack secrets,
+// JWT secrets, or email passwords directly inside this file.
+//
+// Keep them inside .env locally and Environment Variables
+// on Render.
+//
+// ============================================================

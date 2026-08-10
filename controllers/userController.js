@@ -352,7 +352,10 @@ const LoginUser = async (req, res, next) => {
     // Log the actual error for debugging
     console.error("Login Error:", err);
     next(
-      new HttpError(`${err.message || "Login failed, please try again."}`, 500),
+      new HttpError(
+        "Unable to complete login at the moment. Please try again later.",
+        500,
+      ),
     );
   }
 };
