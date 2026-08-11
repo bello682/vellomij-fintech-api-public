@@ -13,7 +13,6 @@ const userTransactionRoute = require("./routers/userTransactionRoutes");
 const adminRoute = require("./routers/adminRoutes");
 const supportRoute = require("./routers/supportRouter");
 const billRoute = require("./routers/billRoutes");
-const adminRoute = require("./routers/adminRoutes");
 
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
@@ -163,16 +162,14 @@ app.use("/Api_Url/FintechUsers", userRoute);
 app.use("/Api_Url/FintechTransactions", userTransactionRoute);
 
 // Admin routes
-app.use("/Api_Url/FintechAdmin", adminRoute);
+// app.use("/Api_Url/FintechAdmin", adminRoute);
+app.use("/Api_Url/auth", adminRoute);
 
 // Support routes
 app.use("/Api_Url/FintechSupport", supportRoute);
 
 // Bill payment routes
 app.use("/Api_Url/FintechBills", billRoute);
-
-// Admin routes
-app.use("/Api_Url/auth", adminRoute);
 
 // ============================================================
 // TEMPORARY PRISMA DATABASE CONNECTION TEST
