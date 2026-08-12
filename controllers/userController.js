@@ -4,7 +4,15 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const HttpError = require("../models/errorModel");
-const sendOTPEmail = require("../views/sendOtpEmail.js");
+const {
+  sendWelcomeEmail,
+  sendAccountFrozenEmail,
+  sendCreditAlert,
+  sendDebitAlert,
+  sendKYCApprovedEmail,
+  sendKYCRejectedEmail,
+  sendVerificationOTP,
+} = require("../views/Useremails .js");
 const generateToken = require("../constants/generateToken.js");
 const {
   registrationSchema,
@@ -143,8 +151,8 @@ const UserRegistration = async (req, res, next) => {
     }
 
     // 5. Send Email (If this fails, the catch block handles it)
-    // await sendOTPEmail(user.email, otp, user.fullName);
-    sendOTPEmail(user.email, otp, user.fullName).catch((err) => {
+    // await sendVerificationOTP(user.email, otp, user.fullName);
+    sendVerificationOTP(user.email, otp, user.fullName).catch((err) => {
       console.error("Background email task failed:", err);
     });
 
@@ -250,8 +258,8 @@ const ResendOTP = async (req, res, next) => {
       data: { otp: newOtp, otpExpiresAt },
     });
 
-    // await sendOTPEmail(email, newOtp);
-    sendOTPEmail(email, newOtp).catch((err) => {
+    // await sendVerificationOTP(email, newOtp);
+    sendVerificationOTP(email, newOtp).catch((err) => {
       console.error("Background email task failed:", err);
     });
     const token = generateToken(user);

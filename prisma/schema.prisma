@@ -22,6 +22,49 @@ enum KycStatus {
 }
 
 
+
+// ============================================================
+// ADMIN
+// Completely separate from User
+// ============================================================
+
+model Admin {
+  id                     String    @id @default(uuid())
+  fullName               String
+  email                  String    @unique
+  password               String
+
+  // Admin role
+  role                   String    @default("admin")
+
+  // Account status
+  status                 String    @default("active")
+
+  // Verification
+  verification_status    String    @default("verified")
+  isVerified             Boolean   @default(true)
+
+  // OTP / Password Reset
+  otp                    String?
+  otpExpiresAt           DateTime?
+
+  resetPasswordToken     String?
+  resetPasswordExpiresAt DateTime?
+
+  // Security / Account Control
+  isFrozen               Boolean   @default(false)
+
+  // Production audit / soft delete
+  isDeleted              Boolean   @default(false)
+  deletedAt              DateTime?
+
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+}
+
+
+
+
 // 1. Update User Model to link to Transactions
 model User {
   id                     String    @id @default(uuid())
@@ -75,8 +118,7 @@ supportTickets SupportTicket[]
   // dailyTransferLimit Float     @default(50000000.0)
   dailyTransferLimit Float     @default(50000.0) // Default limit of 50k NGN
 
-  isAdmin           Boolean   @default(false)   // To distinguish admin users
-}
+ }
 
 
 // 2. KYC
